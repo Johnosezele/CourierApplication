@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">Courier app</string>
-    <string name="app_title">Courier app</string>
+    <string name="app_name">Zeus Logistics</string>
+    <string name="app_title">Zeus Logistics</string>
+    <string name="google_maps_key">AIzaSyAD9gM4-fHjGNKjcFMQBKZ2M7d07PV7pBU</string>
 
     !--DRAWER STRINGS-->
     <string name="drawer_goto_logout">Logout</string>
@@ -73,9 +74,9 @@
 
 
     <!--Others-->
-    <string name="additional_1">Express</string>
-    <string name="additional_2">Superexpress</string>
-    <string name="additional_3">Car Express</string>
+    <string name="additional_1" translatable="false">Express</string>
+    <string name="additional_2" translatable="false">Superexpress</string>
+    <string name="additional_3" translatable="false">Car Express</string>
 
     <string name="drawer_open">Open the navigation panel</string>
     <string name="drawer_close">Close the navigation panel</string>

@@ -4,7 +4,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
               android:orientation="vertical"
-             tools:context="com.tryouts.courierapplication.fragments.NewOrderFragment">
+             tools:context="com.zeus_logistics.ZL.fragments.NewOrderFragment">
 
 
         <LinearLayout
@@ -37,6 +37,7 @@
                     android:layout_height="match_parent"
                     android:text="@string/hint_address"
                     android:textSize="20sp"/>
+
             </FrameLayout>
         </LinearLayout>
 
@@ -70,12 +71,13 @@
                     android:layout_height="match_parent"
                     android:text="@string/hint_address"
                     android:textSize="20sp"/>
-                <!--<fragment-->
-                <!--android:id="@+id/place_autocomplete_fragment2"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"-->
-                <!--/>-->
+
+<!--                <fragment-->
+<!--                android:id="@+id/place_autocomplete_fragment2"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"-->
+<!--                />-->
             </FrameLayout>
         </LinearLayout>
 

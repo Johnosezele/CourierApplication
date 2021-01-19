@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tryouts.courierapplication">
+          package="com.zeus_logistics.ZL">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -20,17 +20,17 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.zeus_logistics.ZL.MainActivity"
                   android:label="@string/app_title">
         </activity>
 
 
-        <service android:name=".firebaseservices.MyFirebaseMessagingService">
+        <service android:name="com.zeus_logistics.ZL.firebaseservices.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        <service android:name=".firebaseservices.FirebaseIDService">
+        <service android:name="com.zeus_logistics.ZL.firebaseservices.FirebaseIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
@@ -48,9 +48,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
 
-        <activity android:name=".RegisterActivity">
+        <activity android:name="com.zeus_logistics.ZL.RegisterActivity">
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name="com.zeus_logistics.ZL.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
