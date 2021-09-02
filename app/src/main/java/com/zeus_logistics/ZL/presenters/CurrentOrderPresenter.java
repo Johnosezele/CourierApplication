@@ -1,5 +1,9 @@
 package com.zeus_logistics.ZL.presenters;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.zeus_logistics.ZL.fragments.CurrentOrderFragment;
 import com.zeus_logistics.ZL.interactors.CurrentOrderInteractor;
 
@@ -57,6 +61,7 @@ public class CurrentOrderPresenter {
     /**
      * Informs view that it needs to inflate courier buttons
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void inflateCourierButtons() {
         mView.onInflateCourierButtonsCall();
     }
@@ -66,7 +71,7 @@ public class CurrentOrderPresenter {
      */
     public void onCourierButtonClick(int whichButton) {
         mInteractor.checkIfSureToChangeOrderStatus(mView.getFragmentContext(),
-                mView.getOrderTimeStamp(), whichButton);
+                whichButton);
     }
     /**
      * Receives a call when alertdialog is ready for the view.

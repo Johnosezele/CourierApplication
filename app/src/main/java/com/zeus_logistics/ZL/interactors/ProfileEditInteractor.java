@@ -15,9 +15,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.zeus_logistics.ZL.items.User;
 import com.zeus_logistics.ZL.presenters.ProfileEditPresenter;
+
+import org.jetbrains.annotations.NotNull;
 
 public class ProfileEditInteractor {
 
@@ -38,22 +40,23 @@ public class ProfileEditInteractor {
      */
     public void getUserDataFromDb() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
         final String uid = user.getUid();
         mDatabaseReference.child("users").child(uid).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
                         mUser.setName(String.valueOf(dataSnapshot.child("name").getValue()));
                         mUser.setPhone(String.valueOf(dataSnapshot.child("phone").getValue()));
                         mUser.setEmail(String.valueOf(dataSnapshot.child("email").getValue()));
                         mUser.setUid(uid);
                         mUser.setRole(String.valueOf(dataSnapshot.child("role").getValue()));
-                        checkAndSetCurrentUserToken(uid);
+                        //checkAndSetCurrentUserToken(uid);
                         mPresenterEdit.onReceivedUserDataFromDb(mUser);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onCancelled(@NotNull DatabaseError databaseError) {
 
                     }
                 }
@@ -62,8 +65,8 @@ public class ProfileEditInteractor {
 
 
     // Precaution, in case user's token get changed or removed
-    private String checkAndSetCurrentUserToken(String userUid) {
-        String instanceId = FirebaseInstanceId.getInstance().getToken();
+    private FirebaseMessaging checkAndSetCurrentUserToken(String userUid) {
+        FirebaseMessaging instanceId = FirebaseMessaging.getInstance();
         if(instanceId != null) {
             DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
             mDatabaseReference.child("users")
@@ -93,7 +96,7 @@ public class ProfileEditInteractor {
         mDatabaseReference.child("users").child(userUid).
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
                         //DATA ALREADY EXISTS
                         String oldMail = String.valueOf(dataSnapshot.child("email").getValue());
                         if(!oldMail.equals(mUser.getEmail())) {
@@ -103,7 +106,7 @@ public class ProfileEditInteractor {
                         mPresenterEdit.sendToastRequestToView(2);
                     }
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onCancelled(@NotNull DatabaseError databaseError) {
                         Log.d("warning", "oncancelled");
                     }
                 });

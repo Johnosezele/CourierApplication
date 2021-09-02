@@ -15,6 +15,7 @@ public class PreviousOrderPresenter {
     }
 
     public void initialize() {
+        mView.showProgressDialog();
         mInteractor.fetchPreviousOrdersData();
     }
 
@@ -24,6 +25,7 @@ public class PreviousOrderPresenter {
 
     public void onAdapterReady() {
         mView.setListViewWithAdapter(mInteractor.sendOrdersAdapter());
+        mView.hideProgressDialog();
     }
 
     public void detachView() {

@@ -154,7 +154,7 @@ public class ProfileEditFragment extends Fragment {
             mProgressDialog.setMessage(getString(R.string.progress_dialog_loading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setIndeterminate(true);
-            mProgressDialog.show();
+            mProgressDialog.hide();
         }
     }
 

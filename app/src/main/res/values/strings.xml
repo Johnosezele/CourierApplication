@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Zeus Logistics</string>
-    <string name="app_title">Zeus Logistics</string>
+    <string name="app_name">Zealous Logistics</string>
+    <string name="app_title">Zealous Logistics</string>
     <string name="google_maps_key">AIzaSyAD9gM4-fHjGNKjcFMQBKZ2M7d07PV7pBU</string>
 
     !--DRAWER STRINGS-->
@@ -54,7 +54,7 @@
     <string name="heading_to">To:</string>
     <string name="heading_calculate">Prepare</string>
     <string name="heading_call">Place order</string>
-    <string name="hint_address">Enter address</string>
+    <string name="hint_address">Enter your location</string>
     <string name="neworder_summary_start">Distance is </string>
     <string name="neworder_summary_mid">.</string>
     <string name="neworder_express_checkbox">Express (up to 1h delivery time)</string>
@@ -66,11 +66,11 @@
     <string name="neworder_placed_unsuccesful">Order could not be placed. \nDistance was not calculated or address field is empty.</string>
 
     <!--ABOUT STRIGNS-->
-    <string name="about_first_header">Courier app</string>
+    <string name="about_first_header">Zeus Logistics</string>
     <string name="about_second_header">Contact</string>
-    <string name="about_phone_number">+48000111000</string>
-    <string name="about_mail">office@magiccourierapp.pl</string>
-    <string name="about_address">Osiedle Czarów 72/10 \n \n  Poznań</string>
+    <string name="about_phone_number">+234 70 3955 1679</string>
+    <string name="about_mail">johnosezele@gmail.com</string>
+    <string name="about_address">Ugbowo PMB1154 \n \n  Benin City</string>
 
 
     <!--Others-->
@@ -109,5 +109,12 @@
     <string name="type_taken">In progress</string>
     <string name="type_finished">Finished</string>
     <string name="type_canceled">Canceled</string>
+    <string name="title" translatable="false">Logistics</string>
+    <string name="AppName" translatable="false">Zealous</string>
+    <string name="enter_your_address" translatable="false">enter pick-up location</string>
+    <string name="enter_destination" translatable="false">enter drop-off location</string>
+    <string name="see_distance" translatable="false">See Distance</string>
+    <string name="navigationfab" translatable="false">navigationFab</string>
+    <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

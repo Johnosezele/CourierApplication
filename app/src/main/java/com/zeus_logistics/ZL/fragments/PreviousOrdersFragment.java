@@ -1,5 +1,6 @@
 package com.zeus_logistics.ZL.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -19,6 +20,7 @@ public class PreviousOrdersFragment extends Fragment {
 
     private ListView mListView;
     private PreviousOrderPresenter mPresenter;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,23 @@ public class PreviousOrdersFragment extends Fragment {
 
     public void setListViewWithAdapter(OrdersAdapter ordersAdapter) {
         mListView.setAdapter(ordersAdapter);
+    }
+
+    /**
+     * Prepares and shows ProgressDialog upon call (while the data is loading).
+     */
+    public void showProgressDialog() {
+        if(mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setMessage(getString(R.string.progress_dialog_loading));
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.show();
+        }
+    }
+
+    public void hideProgressDialog() {
+        mProgressDialog.hide();
     }
 
     @Override

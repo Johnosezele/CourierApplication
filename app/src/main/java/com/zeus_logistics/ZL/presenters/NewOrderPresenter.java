@@ -1,5 +1,11 @@
 package com.zeus_logistics.ZL.presenters;
 
+import android.os.Build;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import com.zeus_logistics.ZL.fragments.NewOrderFragment;
 import com.zeus_logistics.ZL.interactors.NewOrderInteractor;
 
@@ -18,6 +24,7 @@ public class NewOrderPresenter {
         this.view = view;
     }
 
+
     public void createListenerForCall() {
         if(mModel.isOrderReadyToSubmit()) {
             mModel.createAndSendOrderToDb();
@@ -31,6 +38,7 @@ public class NewOrderPresenter {
      * Data received from Google Places
      *
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onActivityResultCalled(int requestCode, int resultCode) {
         if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
@@ -89,6 +97,7 @@ public class NewOrderPresenter {
 
     public void onMapUpdatedShowDistance() {
         view.setDistanceView(mModel.getDistanceString());
+        view.hideProgressDialog();
     }
 
     /**
@@ -118,7 +127,5 @@ public class NewOrderPresenter {
     public void detachView() {
         view = null;
     }
-
-
 
 }

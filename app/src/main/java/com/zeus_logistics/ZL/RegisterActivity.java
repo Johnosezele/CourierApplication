@@ -113,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(mEmail, mPass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()) {
                             final DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
                             mDatabaseReference.child("users").child(mAuth.getCurrentUser().getUid())

@@ -10,10 +10,12 @@
     <!-- This LinearLayout represents the contents of the screen  -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- The ActionBar displayed at the top -->
+
+
+         <!--The ActionBar displayed at the top-->
         <include
             layout="@layout/toolbar"
             android:layout_width="match_parent"
@@ -24,6 +26,7 @@
             android:id="@+id/fragment_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
         </FrameLayout>
     </LinearLayout>
 
@@ -34,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/white"
+        android:background="#FFFFFF"
         app:menu="@menu/menu_drawer"
         app:headerLayout="@layout/drawer_header"/>
 </androidx.drawerlayout.widget.DrawerLayout>

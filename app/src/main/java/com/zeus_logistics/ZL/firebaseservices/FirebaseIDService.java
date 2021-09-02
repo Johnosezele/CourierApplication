@@ -1,22 +1,27 @@
 package com.zeus_logistics.ZL.firebaseservices;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+
+import com.google.firebase.messaging.FirebaseMessagingService;
+
+import org.jetbrains.annotations.NotNull;
 
 
-public class FirebaseIDService extends FirebaseInstanceIdService {
+public class FirebaseIDService extends FirebaseMessagingService {
     private static final String TAG = "FirebaseIDService";
 
     @Override
-    public void onTokenRefresh() {
+    public void onNewToken(@NotNull String refreshedToken) {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        super.onNewToken(refreshedToken);
+        //String deviceToken = refreshedToken;
         Log.d(TAG, "Refreshed token: " + refreshedToken);
+
 
         // Implement this method to send any registration to your app's servers.
         sendRegistrationToServer(refreshedToken);
@@ -40,6 +45,5 @@ public class FirebaseIDService extends FirebaseInstanceIdService {
                     .child("instanceId")
                     .setValue(token);
         }
-
     }
 }

@@ -2,13 +2,17 @@ package com.zeus_logistics.ZL.interactors;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 
 import com.zeus_logistics.ZL.helperclasses.FirebaseOpsHelper;
 import com.zeus_logistics.ZL.items.OrderReceived;
 import com.zeus_logistics.ZL.presenters.CurrentOrderPresenter;
 import com.zeus_logistics.ZL.R;
+
+import org.jetbrains.annotations.NotNull;
 
 
 public class CurrentOrderInteractor {
@@ -28,7 +32,7 @@ public class CurrentOrderInteractor {
      * In case of string being empty, inform the presenter that the view should show a toast to the user.
      * @param orderTimestamp
      */
-    public void getOrderData(String orderTimestamp) {
+    public void getOrderData(@NotNull String orderTimestamp) {
         if(!orderTimestamp.equals(PREFERENCES_EMPTY)) {
             FirebaseOpsHelper firebaseOpsHelper = new FirebaseOpsHelper(this);
             firebaseOpsHelper.getOrderFromDbWithTimestamp(orderTimestamp);
@@ -90,6 +94,7 @@ public class CurrentOrderInteractor {
      * that the view should inflate courier buttons.
      * @param isItCourier
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onUserRoleReceived(boolean isItCourier) {
         if(isItCourier) {
             mPresenter.inflateCourierButtons();
@@ -101,7 +106,7 @@ public class CurrentOrderInteractor {
      * If user clicks positive button, then sends the request to the db to change its status.
      */
     public void checkIfSureToChangeOrderStatus(
-            Context context, final String orderTimestamp, final int whichStatus) {
+            Context context, final int whichStatus) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(context.getString(R.string.dialog_sure_body))
                 .setTitle(context.getString(R.string.dialog_sure_title))

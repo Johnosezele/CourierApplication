@@ -1,19 +1,22 @@
 package com.zeus_logistics.ZL.interactors;
 
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,6 +24,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.zeus_logistics.ZL.helperclasses.DirectionsJSONParser;
 import com.zeus_logistics.ZL.helperclasses.FirebaseOpsHelper;
 import com.zeus_logistics.ZL.items.NewOrder;
@@ -35,13 +41,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class NewOrderInteractor {
 
+    private static final String TAG = "NewOrderInteractor";
     private NewOrderPresenter mPresenter;
     private LatLng mFromAddressLatLng;
     private LatLng mToAddressLatLng;
@@ -52,9 +61,12 @@ public class NewOrderInteractor {
     private String gMapKey;
     private CameraUpdate cu;
     private FragmentActivity mFragmentActivity;
-    private Intent mPlacesAutocompleteIntent;
+    private Intent autoCompleteIntent;
+    private TextView placesFrom;
+    private TextView placesTo;
     private boolean[] additionalServices = {false, false, false};
-
+    private GoogleMap mMap;
+    ArrayList markerOptions= new ArrayList();
 
 
     public NewOrderInteractor(NewOrderPresenter presenter) {
@@ -66,12 +78,16 @@ public class NewOrderInteractor {
                 && addressTo != null && distance != null;
     }
 
+
+
     public void createAndSendOrderToDb() {
         FirebaseOpsHelper fbHelper = new FirebaseOpsHelper();
         fbHelper.addDbDataToOrderAndSend(prepareNewOrderFromExistingData(createNewOrder()));
     }
 
     private NewOrder createNewOrder() {
+       Toast toast = Toast.makeText(mFragmentActivity.getApplicationContext(),"Order has been created Successfully",Toast. LENGTH_LONG);
+       toast.show();
         return new NewOrder();
     }
 
@@ -109,20 +125,19 @@ public class NewOrderInteractor {
         list[2]=mFragmentActivity.getString(R.string.neworder_carexpress_checkbox);
         AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
         builder.setTitle(mFragmentActivity.getString(R.string.neworder_alert_additional));
-        builder.setMultiChoiceItems(list, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-            }
-        });
-        builder.setPositiveButton("OK",
+        builder.setSingleChoiceItems(list , -1,
                 new DialogInterface.OnClickListener() {
-                    @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ListView listview = ((AlertDialog) dialog).getListView();
-                        additionalServices[0] = listview.isItemChecked(0);
-                        additionalServices[1] = listview.isItemChecked(1);
-                        additionalServices[2] = listview.isItemChecked(2);
+                        // The 'which' argument contains the index position
+                        // of the selected item
                     }
+                });
+        builder.setPositiveButton("OK",
+                (dialog, which) -> {
+                    ListView listview = ((AlertDialog) dialog).getListView();
+                    additionalServices[0] = listview.isItemChecked(0);
+                    additionalServices[1] = listview.isItemChecked(1);
+                    additionalServices[2] = listview.isItemChecked(2);
                 }
         );
         return builder;
@@ -137,25 +152,58 @@ public class NewOrderInteractor {
     }
 
     public void onPlaceAutocompleteCall(int requestCode) {
-        try {
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
-                    .build();
-            mPlacesAutocompleteIntent = new PlaceAutocomplete
-                    .IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                    .setFilter(typeFilter)
-                    .setBoundsBias(getDefaultBounds())
-                    .build(mFragmentActivity);
-            mPresenter.onReadyStartActivityForResult(requestCode);
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // Handle the error.
-        } catch (GooglePlayServicesRepairableException e) {
-            // Handle the error.
-        }
+
+//        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+
+//        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+//                .setLocationBias(bounds)
+//                .setTypeFilter(TypeFilter.ADDRESS)
+//                .setSessionToken(token)
+//                .setQuery(String.valueOf(requestCode))
+//                .build();
+//
+//
+//        PlacesClient placesClient = (PlacesClient) NonNull;
+//        placesClient.findAutocompletePredictions(request).addOnSuccessListener(new OnSuccessListener<FindAutocompletePredictionsResponse>() {
+//           @Override
+//            public void onSuccess(FindAutocompletePredictionsResponse response) {
+//                for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+//                    Log.i(TAG, prediction.getPlaceId());
+//                    Log.i(TAG, prediction.getPrimaryText(null).toString());
+//                }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                if (exception instanceof ApiException) {
+//                    ApiException apiException = (ApiException) exception;
+//                    Log.e(TAG, "Place not found: " + apiException.getStatusCode());
+//                }
+//            }
+//        });
+
+        Places.initialize(getFragmentActivity().getApplicationContext(), gMapKey);
+
+        // Set the fields to specify which types of place data to return.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS);
+
+        // Start the autocomplete intent.
+         autoCompleteIntent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields)
+                 .setHint("Enter your preferred location")
+                .build(mFragmentActivity);
+//            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+//                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+//                    .build();
+//            autoCompleteIntent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+//                    .setFilter(typeFilter)
+//                    .setBoundsBias(getDefaultBounds())
+//                    .build(mFragmentActivity);
+        mPresenter.onReadyStartActivityForResult(requestCode);
     }
 
     public Intent getPlacesAutocompleteIntent() {
-        return mPlacesAutocompleteIntent;
+        return autoCompleteIntent;
     }
 
     public void setFragmentActivity(FragmentActivity fragmentActivity) {
@@ -174,19 +222,33 @@ public class NewOrderInteractor {
         return distance;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onActivityResultSuccesful(int requestCode, Intent data) {
         if(requestCode == 1) {
-            onAddressFromReceived(String.valueOf(PlaceAutocomplete.getPlace(mFragmentActivity, data).getAddress()));
-            onFromLatLngReceived(PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().latitude,
-                    PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().longitude);
+            onAddressFromReceived(String.valueOf(Autocomplete.getPlaceFromIntent(data).getAddress()));
+            onFromLatLngReceived(Autocomplete.getPlaceFromIntent(data).getLatLng().latitude,
+                    Autocomplete.getPlaceFromIntent(data).getLatLng().longitude);
             sendFromAddressString();
         } else if(requestCode == 2) {
-            onAddressToReceived(String.valueOf(PlaceAutocomplete.getPlace(mFragmentActivity, data).getAddress()));
-            onToLatLngReceived(PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().latitude,
-                    PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().longitude);
+            onAddressToReceived(String.valueOf(Autocomplete.getPlaceFromIntent(data).getAddress()));
+            onToLatLngReceived(Autocomplete.getPlaceFromIntent(data).getLatLng().latitude,
+                    Autocomplete.getPlaceFromIntent(data).getLatLng().longitude);
             sendToAddressString();
         }
+//        if(requestCode == 1 && data.getData()!=null) {
+//            onAddressFromReceived(String.valueOf(PlaceAutocomplete.getPlace(mFragmentActivity, data).getAddress()));
+//            onFromLatLngReceived(PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().latitude,
+//                    PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().longitude);
+//            sendFromAddressString();
+//        } else if(requestCode == 2 && data.getData()!=null) {
+//            onAddressToReceived(String.valueOf(PlaceAutocomplete.getPlace(mFragmentActivity, data).getAddress()));
+//            onToLatLngReceived(PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().latitude,
+//                    PlaceAutocomplete.getPlace(mFragmentActivity, data).getLatLng().longitude);
+//            sendToAddressString();
+//        }
     }
+
+
 
     private void sendFromAddressString() {
         mPresenter.onReadyFromText(getAddressFromString());
@@ -225,16 +287,16 @@ public class NewOrderInteractor {
     }
 
     /**
-     * Returns default coordinates (city of Poznań)
+     * Returns default coordinates (Benin City, Nigeria)
      * Called from NewOrderPresenter.
      * @return double
      */
     public double getDefaultLatitude() {
-        return 52.4166667;
+        return 6.342450;
     }
 
     public double getDefaultLongitude() {
-        return 16.9666667;
+        return 5.633840;
     }
 
     /**
@@ -243,7 +305,11 @@ public class NewOrderInteractor {
      * @return LatLngBounds
      */
     private LatLngBounds getDefaultBounds() {
-        return new LatLngBounds(new LatLng(52.22843, 17.27617), new LatLng(52.61201, 16.57794));
+        return new LatLngBounds(new LatLng(6.339185, 	5.617447), new LatLng(6.339185, 5.617447));
+//        RectangularBounds bounds = RectangularBounds.newInstance(
+//                new LatLng(	6.339185, 	5.617447),
+//                new LatLng(6.339185, 5.617447));
+//        return bounds;
     }
 
 
@@ -315,13 +381,13 @@ public class NewOrderInteractor {
         String origin = "origin=" + mFromAddressLatLng.latitude + "," + mFromAddressLatLng.longitude;
         String destination = "destination=" + mToAddressLatLng.latitude + "," + mToAddressLatLng.longitude;
         String sensor = "sensor=false";
-        String travelingMode = "mode=bicycling";
+        String travelingMode = "mode=driving";
         String output = "json";
-        String key = "key=" + gMapKey;
+        String key = "&key=" + gMapKey;
         //String params = origin + "&" + destination + "&" + travelingMode + "&" + sensor + "&" + key;
         String params = origin + "&" + destination + "&" + sensor + "&" + travelingMode;
-        String url = "https://goo.gl/maps/Evgup5x7Dy5Qcu7k7"
-                + output + "?" + params;
+        String url = "https://maps.googleapis.com/maps/api/directions/"
+                + output + "?" + params + key;
         return url;
     }
 
@@ -361,6 +427,7 @@ public class NewOrderInteractor {
         return data;
     }
     // Fetches data from url passed
+    @SuppressLint("StaticFieldLeak")
     private class DownloadTask extends AsyncTask<String, Void, String> {
 
         // Downloading data in non-ui thread
@@ -378,7 +445,7 @@ public class NewOrderInteractor {
         // Executes in UI thread, after the execution of
         // doInBackground()
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(@Nullable String result) {
             super.onPostExecute(result);
             ParserTask parserTask = new ParserTask();
             // Invokes the thread for parsing the JSON data
@@ -386,7 +453,9 @@ public class NewOrderInteractor {
         }
     }
     /** A class to parse the Google Places in JSON format */
+
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+
         // Parsing the data in non-ui thread
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
@@ -403,15 +472,17 @@ public class NewOrderInteractor {
             return routes;
         }
         // Executes in UI thread, after the parsing process
-        @Override
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points = null;
             polylineOptions = null;
             distance = "";
-            MarkerOptions markerOptions = new MarkerOptions();
+
+            MarkerOptions markerOptions=  new MarkerOptions();
             // Traversing through all the routes
             for(int i=0;i<result.size();i++){
-                points = new ArrayList<>();
+                points =  new ArrayList<>();
                 polylineOptions = new PolylineOptions();
                 // Fetching i-th route
                 List<HashMap<String, String>> path = result.get(i);
@@ -422,16 +493,18 @@ public class NewOrderInteractor {
                         distance = point.get("distance");
                         continue;
                     }
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
+                    double lat = Double.parseDouble(Objects.requireNonNull(point.get("lat")));
+                    double lng = Double.parseDouble(Objects.requireNonNull(point.get("lng")));
 
                     LatLng position = new LatLng(lat, lng);
                     points.add(position);
                 }
                 // Adding all the points in the route to LineOptions
                 polylineOptions.addAll(points);
-                polylineOptions.width(2);
+                polylineOptions.width(6);
                 polylineOptions.color(Color.RED);
+                polylineOptions.zIndex(6);
+                polylineOptions.geodesic(true);
             }
             if(result.size()<1){
                 return;
@@ -439,10 +512,11 @@ public class NewOrderInteractor {
 
             // Drawing polyline in the Google Map for the i-th route
             mPresenter.onMapPolylineReady();
+
             // Set bounds according to the path in polyline.
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for(LatLng point : points) {
-                builder.include(point);
+            for(Object point : points) {
+                builder.include((LatLng) point);
             }
             LatLngBounds bounds = builder.build();
             int padding = 20;

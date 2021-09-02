@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:navigationIcon="@drawable/ic_baseline_fab"
     app:titleTextColor="@android:color/white"
     android:background="?attr/colorPrimary">
 </androidx.appcompat.widget.Toolbar>
