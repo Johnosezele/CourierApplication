@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 public class FirebaseOpsHelper {
@@ -118,6 +119,7 @@ public class FirebaseOpsHelper {
      * gets it and sends it to the next method.
      * @param orderTimestamp
      */
+    //djdjdj
     public void getOrderFromDbWithTimestamp(String orderTimestamp) {
         mOrderReceived = new OrderReceived();
        readData(new FirebaseCallback() {
@@ -242,15 +244,16 @@ public class FirebaseOpsHelper {
     private void readDataStamp(FirebaseCallbackStamp firebaseCallbackStamp){
         final DatabaseReference dRef = FirebaseDatabase.getInstance().getReference();
         Log.d(TAG, "getTimeStamp: Before attaching the listener");
-        dRef.child("orders").addListenerForSingleValueEvent(
+        dRef.child("orders");
+        dRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             Log.d(TAG, "onDataChange: Inside onData Changed");
-                            for(DataSnapshot order : snapshot.getChildren()) {
+                            for (DataSnapshot order : snapshot.getChildren()) {
                                 mOrderReceived = order.getValue(OrderReceived.class);
-                                mCurrentOrderFragment.setOrderTimeStamp(mNewOrder.getTimeStamp().toString());
+                                mCurrentOrderFragment.setOrderTimeStamp(mNewOrder.setTimeStamp(String.valueOf(snapshot.child("timeStamp").getValue())));
                             }
                             Log.d(TAG, mNewOrder.getTimeStamp().toString());
                             firebaseCallbackStamp.onCallback(Collections.singletonList(mNewOrder.getTimeStamp().toString()));
