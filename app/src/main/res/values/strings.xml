@@ -31,14 +31,14 @@
     <string name="login_bad_email">E-mail not valid</string>
     <string name="login_user_exists">User is already existing</string>
     <string name="login_forgot_pass">Forgot password?</string>
-    <string name="login_forgot_pass_toast">Password reset instruction were send with e-mail</string>
+    <string name="login_forgot_pass_toast">Password reset instruction were sent to e-mail</string>
     <string name="login_forgot_pass_toast_unsucc">E-mail with password reset was not sent.</string>
 
     <!--Profile Details-->
     <string name="heading_name">Name</string>
     <string name="heading_phone">Phone</string>
     <string name="heading_mail">E-mail (needed for logging)</string>
-    <string name="hint_name">Enter a name (i.e. company name)</string>
+    <string name="hint_name"> name</string>
     <string name="hint_phone">Enter phone number</string>
     <string name="hint_mail">Enter e-mail address</string>
 
@@ -66,7 +66,7 @@
     <string name="neworder_placed_unsuccesful">Order could not be placed. \nDistance was not calculated or address field is empty.</string>
 
     <!--ABOUT STRIGNS-->
-    <string name="about_first_header">Zeus Logistics</string>
+    <string name="about_first_header">Zealous Logistics</string>
     <string name="about_second_header">Contact</string>
     <string name="about_phone_number">+234 70 3955 1679</string>
     <string name="about_mail">johnosezele@gmail.com</string>
@@ -115,6 +115,16 @@
     <string name="enter_destination" translatable="false">enter drop-off location</string>
     <string name="see_distance" translatable="false">See Distance</string>
     <string name="navigationfab" translatable="false">navigationFab</string>
+    <string name="sign_in_button" translatable="false">Sign in</string>
+    <string name="forgot_password" translatable="false">Forgot Password?</string>
+    <string name="new_user" translatable="false">New User?</string>
+    <string name="sign_up" translatable="false">Sign up</string>
+    <string name="sign_in_text" translatable="false">Sign in to \ncontinue</string>
+    <string name="sign_in_text_land" translatable="false">Sign in to continue</string>
+    <string name="new_account" translatable="false">new account</string>
+    <string name="phone" translatable="false">phone</string>
+    <string name="create_account" translatable="false">Create Account</string>
+    <string name="sign_in" translatable="false">Sign in</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

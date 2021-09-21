@@ -15,21 +15,32 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.zeus_logistics.ZL.helperclasses.FirebaseOpsHelper;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.zeus_logistics.ZL.interactors.CurrentOrderInteractor;
+import com.zeus_logistics.ZL.items.NewOrder;
 import com.zeus_logistics.ZL.items.OrderReceived;
 import com.zeus_logistics.ZL.presenters.CurrentOrderPresenter;
 import com.zeus_logistics.ZL.R;
 
+import java.util.Objects;
+
 
 public class CurrentOrderFragment extends Fragment {
     private OrderReceived mOrderReceived;
+    public NewOrder mNewOrder;
     private static final String PREFERENCES_NAME = "SharePref";
     private static final String PREFERENCES_TEXT_FIELD = "orderTimeStamp";
     private static final String PREFERENCES_EMPTY = "empty";
+    public String mUserTimeStamp;
     private String orderTimeStamp;
     private SharedPreferences mSharedPreferences;
     private TextView mDateTextView;
@@ -58,7 +69,7 @@ public class CurrentOrderFragment extends Fragment {
 
 //        FirebaseOpsHelper fbHelper = new FirebaseOpsHelper(this);
 //        fbHelper.getTimeStamp();
-        getOrderTimeStamp();
+        //getOrderTimeStamp();
         mSharedPreferences = this.requireActivity().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 //        SharedPreferences.Editor editor = mSharedPreferences.edit();
 //        editor.putString(PREFERENCES_TEXT_FIELD, orderTimeStamp);
@@ -215,6 +226,7 @@ public class CurrentOrderFragment extends Fragment {
     public void showProgressDialog() {
         if(mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setCancelable(false);
             mProgressDialog.setMessage(getString(R.string.progress_dialog_loading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setIndeterminate(true);
@@ -226,11 +238,38 @@ public class CurrentOrderFragment extends Fragment {
         mProgressDialog.hide();
     }
 
-    public String getOrderTimeStamp() {
-        FirebaseOpsHelper fbHelper = new FirebaseOpsHelper(this);
-        fbHelper.getTimeStamp();
-        return orderTimeStamp;
+    public void getOrderTimeStamp() {
+        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.child("orders").orderByChild("timeStamp")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            for(DataSnapshot order : dataSnapshot.getChildren()) {
+                                mOrderReceived = order.getValue(OrderReceived.class);
+                                //mOrderReceived.setTimeStamp(Objects.requireNonNull(order.child("timeStamp").getValue(OrderReceived.class)).getTimeStamp());
+                                assert mOrderReceived != null;
+                                long timeStamp = mOrderReceived.getTimeStamp();
+                                String timeS = Long.toString(timeStamp);
+                                ordertimeStamp(timeS);
+//                                mInteractor.getOrderData();
+//                                mInteractor.checkWhetherLoggedUserIsCourier();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
+
+    private void ordertimeStamp(String timeS) {
+        mPresenter.recieveTimeStampFromOrderFragment(timeS);
+        orderTimeStamp = timeS;
+    }
+
 
     public Context getFragmentContext() {
         return getContext();
@@ -242,7 +281,7 @@ public class CurrentOrderFragment extends Fragment {
         mPresenter.detachView();
     }
 
-    public void setOrderTimeStamp(String orderTimeStamp) {
-        this.orderTimeStamp = orderTimeStamp;
-    }
+//    public Map<String, String> setOrderTimeStamp(Map<String, String> timeStamp) {
+//        return timeStamp;
+//    }
 }

@@ -4,7 +4,6 @@ package com.zeus_logistics.ZL.helperclasses;
 
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -18,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.zeus_logistics.ZL.fragments.CurrentOrderFragment;
 import com.zeus_logistics.ZL.interactors.CurrentOrderInteractor;
@@ -98,6 +96,38 @@ public class FirebaseOpsHelper {
         });
     }
 
+//    private void retrieveTimeStamp() {
+//        mNewOrder = new NewOrder();
+//        readDaTa(new FirebaseCallBack() {
+//            @Override
+//            public void onCallback(List<String> list) {
+//                Log.d(TAG, mNewOrder.getTimeStamp().toString());
+//            }
+//        });
+//    }
+//    private void readDaTa(FirebaseCallBack firebaseCallBack){
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        final DatabaseReference dbRef = database.getReference();
+//        dbRef.child("orders").child(getCurrentUserUid()).addListenerForSingleValueEvent(
+//                new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+//                        if(dataSnapshot.exists()) {
+//                            mNewOrder.setTimeStamp((Map<String, String>) dataSnapshot.child("timestamp").getValue());
+//                        }
+//                        firebaseCallBack.onCallback(Collections.singletonList(mNewOrder.getTimeStamp().toString()));
+//                    }
+//                    @Override
+//                    public void onCancelled(@NotNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+//    }
+//
+//    private interface FirebaseCallBack{
+//        void onCallback(List<String> list);
+//    }
+
     public void addDbDataToOrderAndSend(NewOrder newOrder) {
         this.mNewOrder = newOrder;
         mNewOrder.setUserToken(String.valueOf(getCurrentUserToken()));
@@ -107,7 +137,6 @@ public class FirebaseOpsHelper {
 
     private void sendNewOrderToDb(DatabaseReference dbRef) {
         dbRef.child("orders").child(mNewOrder.getUserTimeStamp()).setValue(mNewOrder);
-        //dbRef.child("orders").child(mNewOrder.getTimeStamp()).setValue(mNewOrder);
     }
 
     /**
@@ -119,50 +148,73 @@ public class FirebaseOpsHelper {
      * gets it and sends it to the next method.
      * @param orderTimestamp
      */
-    //djdjdj
     public void getOrderFromDbWithTimestamp(String orderTimestamp) {
         mOrderReceived = new OrderReceived();
-       readData(new FirebaseCallback() {
-                  @Override
-                  public void onCallback(long list) {
-                      Log.d(TAG, orderTimestamp);
-                  }
-              }, orderTimestamp);
-    }
-
-    //Method for reading data
-    private void readData(FirebaseCallback firebaseCallback, String orderTimestamp){
         long orderTimestampLong = Long.parseLong(orderTimestamp);
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        Log.d(TAG, "Before attaching the listener");
         dbRef.child("orders").orderByChild("timeStamp").equalTo(orderTimestampLong)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()) {
-                            Log.d(TAG, "inside onDataChange() method");
                             for(DataSnapshot order : dataSnapshot.getChildren()) {
                                 mOrderReceived = order.getValue(OrderReceived.class);
-                                assert mOrderReceived != null;
                                 mCurrentOrderInteractor.setOrderUserTimeStamp(mOrderReceived.getUserTimeStamp());
                             }
-                            Log.d(TAG, orderTimestamp);
                             checkIfPhoneNumberAndSend(mOrderReceived);
-                            firebaseCallback.onCallback(orderTimestampLong);
+                            }
                         }
-                    }
 
                     @Override
-                    public void onCancelled(@NotNull DatabaseError databaseError) {
-                        Log.d(TAG, databaseError.getMessage());
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Error!");
                     }
                 });
-        Log.d(TAG, "After attaching the listener");
     }
-    //Interface for handling Firebase Asynchronous Nature
-    private interface FirebaseCallback{
-        void onCallback(long list);
-    }
+
+//    public void getOrderFromDbWithTimestamp(String orderTimestamp) {
+//        mOrderReceived = new OrderReceived();
+//       readData(new FirebaseCallback() {
+//                  @Override
+//                  public void onCallback(long list) {
+//                      Log.d(TAG, orderTimestamp);
+//                  }
+//              }, orderTimestamp);
+//    }
+//
+//    //Method for reading data
+//    private void readData(FirebaseCallback firebaseCallback, String orderTimestamp){
+//        long orderTimestampLong = Long.parseLong(orderTimestamp);
+//        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+//        Log.d(TAG, "Before attaching the listener");
+//        dbRef.child("orders").orderByChild("timeStamp").equalTo(orderTimestampLong)
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+//                        if(dataSnapshot.exists()) {
+//                            Log.d(TAG, "inside onDataChange() method");
+//                            for(DataSnapshot order : dataSnapshot.getChildren()) {
+//                                mOrderReceived = order.getValue(OrderReceived.class);
+//                                assert mOrderReceived != null;
+//                                mCurrentOrderInteractor.setOrderUserTimeStamp(mOrderReceived.getUserTimeStamp());
+//                            }
+//                            Log.d(TAG, orderTimestamp);
+//                            checkIfPhoneNumberAndSend(mOrderReceived);
+//                            firebaseCallback.onCallback(orderTimestampLong);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NotNull DatabaseError databaseError) {
+//                        Log.d(TAG, databaseError.getMessage());
+//                    }
+//                });
+//        Log.d(TAG, "After attaching the listener");
+//    }
+//    //Interface for handling Firebase Asynchronous Nature
+//    private interface FirebaseCallback{
+//        void onCallback(long list);
+//    }
 
     /**
      * Send order back to fragment's main interactor.
@@ -230,48 +282,48 @@ public class FirebaseOpsHelper {
         );
     }
 
-    public void getTimeStamp() {
-        mNewOrder = new NewOrder();
-        readDataStamp(new FirebaseCallbackStamp() {
-            @Override
-            public void onCallback(List<String> list) {
-                Log.d(TAG, mNewOrder.getTimeStamp().toString());
-            }
-        });
-    }
-
-    //Method that reads timestamtamp from firebase db asynchronously
-    private void readDataStamp(FirebaseCallbackStamp firebaseCallbackStamp){
-        final DatabaseReference dRef = FirebaseDatabase.getInstance().getReference();
-        Log.d(TAG, "getTimeStamp: Before attaching the listener");
-        dRef.child("orders");
-        dRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            Log.d(TAG, "onDataChange: Inside onData Changed");
-                            for (DataSnapshot order : snapshot.getChildren()) {
-                                mOrderReceived = order.getValue(OrderReceived.class);
-                                mCurrentOrderFragment.setOrderTimeStamp(mNewOrder.setTimeStamp(String.valueOf(snapshot.child("timeStamp").getValue())));
-                            }
-                            Log.d(TAG, mNewOrder.getTimeStamp().toString());
-                            firebaseCallbackStamp.onCallback(Collections.singletonList(mNewOrder.getTimeStamp().toString()));
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.d(TAG, error.getMessage());
-                    }
-                });
-        Log.d(TAG, "getTimeStamp: After attaching the listener");
-    }
-
-    //Interface for getting the TimeStamp
-    private interface FirebaseCallbackStamp{
-        void onCallback(List<String> list);
-    }
+//    public void getTimeStamp() {
+//        mNewOrder = new NewOrder();
+//        readDataStamp(new FirebaseCallbackStamp() {
+//            @Override
+//            public void onCallback(List<String> list) {
+//                Log.d(TAG, mNewOrder.getTimeStamp().toString());
+//            }
+//        });
+//    }
+//
+//    //Method that reads timestamp from firebase db asynchronously
+//    private void readDataStamp(FirebaseCallbackStamp firebaseCallbackStamp){
+//        final DatabaseReference dRef = FirebaseDatabase.getInstance().getReference();
+//        Log.d(TAG, "getTimeStamp: Before attaching the listener");
+//        dRef.child("orders");
+//        dRef.addListenerForSingleValueEvent(
+//                new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if (snapshot.exists()) {
+//                            Log.d(TAG, "onDataChange: Inside onData Changed");
+//                            for (DataSnapshot order : snapshot.getChildren()) {
+//                                mOrderReceived = order.getValue(OrderReceived.class);
+//                                mCurrentOrderFragment.setOrderTimeStamp(mNewOrder.getTimeStamp());
+//                            }
+//                            Log.d(TAG, mNewOrder.getTimeStamp().toString());
+//                            firebaseCallbackStamp.onCallback(Collections.singletonList(mNewOrder.getTimeStamp().toString()));
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Log.d(TAG, error.getMessage());
+//                    }
+//                });
+//        Log.d(TAG, "getTimeStamp: After attaching the listener");
+//    }
+//
+//    //Interface for getting the TimeStamp
+//    private interface FirebaseCallbackStamp{
+//        void onCallback(List<String> list);
+//    }
 
     /**
      * Changes the order status in the database, according to the int value

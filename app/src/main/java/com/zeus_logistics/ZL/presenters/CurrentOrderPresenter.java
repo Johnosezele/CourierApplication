@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.zeus_logistics.ZL.fragments.CurrentOrderFragment;
 import com.zeus_logistics.ZL.interactors.CurrentOrderInteractor;
+import com.zeus_logistics.ZL.items.OrderReceived;
 
 
 public class CurrentOrderPresenter {
@@ -35,9 +36,16 @@ public class CurrentOrderPresenter {
      */
     public void initialize() {
         mView.showProgressDialog();
-        mInteractor.getOrderData(mView.getOrderTimeStamp());
+        mView.getOrderTimeStamp();
+       // mInteractor.getUserTimeStampFromDb();
+        //mInteractor.getOrderData(mView.getOrderTimeStamp());
+        //mInteractor.checkWhetherLoggedUserIsCourier();
+    }
+    public void recieveTimeStampFromOrderFragment(String timeS){
+        mInteractor.getOrderData(timeS);
         mInteractor.checkWhetherLoggedUserIsCourier();
     }
+
 
     /**
      * Upon receiving order strings, sends it to view in order to display them to the user.
@@ -109,5 +117,8 @@ public class CurrentOrderPresenter {
         mInteractor.setInteractorContext(mView.getContext());
     }
 
-
+//send usertimestamp to the
+    public void onReceivedUserTimestampFromDb(OrderReceived order) {
+           mInteractor.onReceivedOrderData(order);
+    }
 }

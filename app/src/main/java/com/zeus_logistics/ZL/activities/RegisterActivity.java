@@ -1,12 +1,13 @@
-package com.zeus_logistics.ZL;
+package com.zeus_logistics.ZL.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -27,23 +29,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.zeus_logistics.ZL.R;
 import com.zeus_logistics.ZL.items.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private EditText mEditTextEmail;
-    private EditText mEditTextPassword;
-    private EditText mEditTextPhone;
-    private EditText mEditTextName;
+    private TextInputEditText mEditTextEmail;
+    private TextInputEditText mEditTextPassword;
+    private TextInputEditText mEditTextPhone;
+    private TextInputEditText mEditTextName;
     private ProgressDialog mProgressDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_material_design_signup);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -61,12 +64,12 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
 
-        mEditTextEmail = (EditText) findViewById(R.id.login_edittext_email);
-        mEditTextPassword = (EditText) findViewById(R.id.login_edittext_pass);
-        mEditTextPhone = (EditText) findViewById(R.id.login_edittext_phone);
-        mEditTextName = (EditText) findViewById(R.id.login_edittext_name);
-        TextView mTextViewSignIn = (TextView) findViewById(R.id.login_textview_already);
-        Button mSignUpButton = (Button) findViewById(R.id.login_button_signup);
+        mEditTextEmail =  findViewById(R.id.userEmail);
+        mEditTextPassword =  findViewById(R.id.userPassword);
+        mEditTextPhone =  findViewById(R.id.userPhone);
+        mEditTextName =  findViewById(R.id.username);
+        TextView mTextViewSignIn = (TextView) findViewById(R.id.toSignIn);
+        Button mSignUpButton = (Button) findViewById(R.id.newUserReg);
         mProgressDialog = new ProgressDialog(this);
 
         mSignUpButton.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
         // display progress dialog
         mProgressDialog.setMessage(getString(R.string.login_progressbar_register));
         mProgressDialog.show();
+        mProgressDialog.setCancelable(false);
         // Create a new User
         mAuth.createUserWithEmailAndPassword(mEmail, mPass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -119,7 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
                             mDatabaseReference.child("users").child(mAuth.getCurrentUser().getUid())
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             User mUser = new User();
                                             mUser.setName(mName);
                                             mUser.setEmail(mEmail);
@@ -183,5 +187,30 @@ public class RegisterActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         mAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showExitDialog();
+    }
+
+    private void showExitDialog() {
+        //Alert Dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("Exit");
+        builder.setMessage("Are You Sure You Want To Exit");
+
+        //Button Recover Password
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                RegisterActivity.super.onBackPressed();
+            }
+        });
+        //Button cancel
+        builder.setNegativeButton("No", null);
+        //show dialog
+        builder.create().show();
     }
 }

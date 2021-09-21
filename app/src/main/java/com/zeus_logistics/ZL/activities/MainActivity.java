@@ -1,45 +1,35 @@
-package com.zeus_logistics.ZL;
+package com.zeus_logistics.ZL.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.multidex.MultiDex;
 //import androidx.multidex.MultiDex;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.zeus_logistics.ZL.R;
+import com.zeus_logistics.ZL.Utils.NetworkChangeListener;
 import com.zeus_logistics.ZL.firebaseservices.MyFirebaseMessagingService;
 import com.zeus_logistics.ZL.fragments.AboutFragment;
 import com.zeus_logistics.ZL.fragments.CurrentOrderFragment;
@@ -57,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
+    //calls broadcastReceiver in charge of listening to network changes
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
     private static final String PREFERENCES_NAME = "SharePref";
     private static final String PREFERENCES_TEXT_FIELD = "orderTimeStamp";
@@ -191,12 +183,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onStart() {
+        //Register a BroadcastReceiver to be run in the main activity thread.
+        // The receiver will be called with any broadcast Intent that matches filter, in the main application thread.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener, filter);
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onStop() {
+        //Unregister a previously registered BroadcastReceiver.
+        // All filters that have been registered for this BroadcastReceiver will be removed.
+        unregisterReceiver(networkChangeListener);
         super.onStop();
         if(mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
@@ -326,9 +325,29 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode,resultCode,data);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//    }
+    @Override
+    public void onBackPressed() {
+        showExitDialog();
+    }
+
+    private void showExitDialog() {
+        //Alert Dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setTitle("Exit");
+        builder.setMessage("Are You Sure You Want To Exit");
+
+        //Button Recover Password
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+               MainActivity.super.onBackPressed();
+            }
+        });
+        //Button cancel
+        builder.setNegativeButton("No", null);
+        //show dialog
+        builder.create().show();
+    }
 
 }

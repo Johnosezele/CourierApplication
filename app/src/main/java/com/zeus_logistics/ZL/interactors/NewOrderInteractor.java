@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -86,8 +85,22 @@ public class NewOrderInteractor {
     }
 
     private NewOrder createNewOrder() {
-       Toast toast = Toast.makeText(mFragmentActivity.getApplicationContext(),"Order has been created Successfully",Toast. LENGTH_LONG);
-       toast.show();
+        //Alert Dialog message for successful order
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getFragmentActivity());
+        builder.setCancelable(false);
+        builder.setMessage("Your Order has been created successfully, please pay cash to the rider at pickup");
+
+        //Button Recover Password
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        //show dialog
+        builder.create().show();
+//       Toast toast = Toast.makeText(mFragmentActivity.getApplicationContext(),"Order has been created Successfully",Toast. LENGTH_SHORT);
+//       toast.show();
         return new NewOrder();
     }
 

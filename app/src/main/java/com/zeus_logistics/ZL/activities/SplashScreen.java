@@ -1,4 +1,4 @@
-package com.zeus_logistics.ZL;
+package com.zeus_logistics.ZL.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.zeus_logistics.ZL.R;
 
 public class SplashScreen extends AppCompatActivity {
 

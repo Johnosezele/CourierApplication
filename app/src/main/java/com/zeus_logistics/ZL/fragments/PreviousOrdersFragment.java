@@ -54,7 +54,8 @@ public class PreviousOrdersFragment extends Fragment {
      */
     public void showProgressDialog() {
         if(mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog = new ProgressDialog(getFragmentContext());
+            mProgressDialog.setCancelable(false);
             mProgressDialog.setMessage(getString(R.string.progress_dialog_loading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setIndeterminate(true);

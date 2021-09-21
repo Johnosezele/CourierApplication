@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import com.zeus_logistics.ZL.activities.MainActivity;
+
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityITest {

@@ -4,9 +4,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.zeus_logistics.ZL.fragments.CurrentOrderFragment;
 import com.zeus_logistics.ZL.helperclasses.FirebaseOpsHelper;
 import com.zeus_logistics.ZL.items.OrderReceived;
 import com.zeus_logistics.ZL.presenters.CurrentOrderPresenter;
@@ -18,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 public class CurrentOrderInteractor {
 
     private CurrentOrderPresenter mPresenter;
+    private CurrentOrderFragment mView;
     private AlertDialog mAlertDialog;
     private String orderUserTimeStamp;
     private static final String PREFERENCES_EMPTY = "empty";
@@ -42,6 +52,9 @@ public class CurrentOrderInteractor {
         }
     }
 
+    public void loadOrders(OrderReceived orderData){
+            onReceivedOrderData(orderData);
+        }
     /**
      * Upon receiving order data sends it to preparing data for view method.
      * @param orderReceived
@@ -187,5 +200,39 @@ public class CurrentOrderInteractor {
      */
     public void hideProgressDialog() {
         mPresenter.hideProgressDialog();
+    }
+
+    public String getUserTimeStampFromDb() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference dbRef = database.getReference();
+        dbRef.child("orders").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                     showData(snapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+        return orderUserTimeStamp;
+    }
+
+    private void showData(DataSnapshot snapshot) {
+        //first create for loop that iterates through all the snapshots
+        for (DataSnapshot ds : snapshot.getChildren()) {
+            OrderReceived orderReceived = new OrderReceived();
+            orderReceived.setFrom(ds.child("userTimeStamp").getValue(OrderReceived.class).getFrom());//set From
+            orderReceived.setTo(ds.child("userTimeStamp").getValue(OrderReceived.class).getTo());//set To
+            orderReceived.setDistance(ds.child("userTimeStamp").getValue(OrderReceived.class).getDistance());
+            orderReceived.setPhoneNumber(ds.child("userTimeStamp").getValue(OrderReceived.class).getPhoneNumber());
+            orderReceived.setIsExpress(ds.child("userTimeStamp").getValue(OrderReceived.class).getIsExpress());
+            orderReceived.setIsSuperExpress(ds.child("userTimeStamp").getValue(OrderReceived.class).getIsSuperExpress());
+            orderReceived.setIsCarExpress(ds.child("userTimeStamp").getValue(OrderReceived.class).getIsCarExpress());
+
+            //sendOrderData to next method
+            mPresenter.onReceivedUserTimestampFromDb(orderReceived);
+        }
     }
 }

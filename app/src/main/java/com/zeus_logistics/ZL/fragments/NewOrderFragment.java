@@ -4,7 +4,6 @@ package com.zeus_logistics.ZL.fragments;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -12,21 +11,17 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 
-import android.os.HandlerThread;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,11 +33,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 //import com.zeus_logistics.ZL.MapFromFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.zeus_logistics.ZL.MainActivity;
 import com.zeus_logistics.ZL.presenters.NewOrderPresenter;
 import com.zeus_logistics.ZL.R;
-
-import static com.google.android.material.resources.MaterialResources.getDrawable;
 
 
 public class NewOrderFragment extends Fragment implements OnMapReadyCallback {
@@ -232,6 +224,7 @@ public class NewOrderFragment extends Fragment implements OnMapReadyCallback {
             mProgressDialog.setMessage(getString(R.string.progress_dialog_loading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
     }
