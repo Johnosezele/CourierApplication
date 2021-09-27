@@ -12,7 +12,10 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +27,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.multidex.MultiDex;
 //import androidx.multidex.MultiDex;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zeus_logistics.ZL.R;
 import com.zeus_logistics.ZL.Utils.NetworkChangeListener;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
@@ -72,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // Set SharedPreferences
         mSharedPreferences = getSharedPreferences(PREFERENCES_NAME, Activity.MODE_PRIVATE);
 
+        updateHeader();
         //Hooks(earlier implementation)
         //floatingActionButton = findViewById(R.id.floatingActionButton2);
 
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         //View drawerHeader = nvDrawer.inflateHeaderView(R.layout.drawer_header);
         setupDrawerContent(nvDrawer);
 
+        currentUser = mAuth.getCurrentUser();
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = firebaseAuth -> {
             if(firebaseAuth.getCurrentUser() != null) {
@@ -283,6 +291,21 @@ public class MainActivity extends AppCompatActivity {
         setTitle(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
+    }
+
+    //Customising NavHeader
+    private void updateHeader(){
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        View headerView = nvDrawer.getHeaderView(0);
+        TextView navUserName = headerView.findViewById(R.id.navUserName);
+        TextView navEmail = headerView.findViewById(R.id.usermail);
+        ImageView navUserPhoto = headerView.findViewById(R.id.navUserPhoto);
+
+        navUserName.setText(currentUser.getDisplayName());
+        navEmail.setText(currentUser.getEmail());
+
+        //Load user image with glide
+        Glide.with(this).load(currentUser.getPhotoUrl()).into(navUserPhoto);
     }
 
     /**
