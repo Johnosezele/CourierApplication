@@ -7,7 +7,8 @@
                 <group android:checkableBehavior="single">
                     <item
                         android:id="@+id/nav_current_order"
-                        android:icon="@drawable/ic_outline_cached_24"
+                        android:icon="@drawable/ic_current"
+                        android:iconTint="#000"
                         android:title="@string/drawer_goto_currentorder"/>
                     <item
                         android:id="@+id/nav_neworder"
@@ -38,11 +39,11 @@
 
                     <item
                         android:id="@+id/nav_about"
-                        android:icon="@drawable/ic_outline_info_24"
+                        android:icon="@drawable/ic_baseline_info_24"
                         android:title="@string/drawer_goto_about" />
                     <item
                         android:id="@+id/nav_logout"
-                        android:icon="@drawable/ic_outline_arrow_circle_left_24"
+                        android:icon="@drawable/ic_baseline_arrow_circle_left_24"
                         android:title="@string/drawer_goto_logout"/>
                 </group>
             </menu>

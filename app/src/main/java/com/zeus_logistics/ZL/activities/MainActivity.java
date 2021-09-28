@@ -32,7 +32,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.zeus_logistics.ZL.R;
 import com.zeus_logistics.ZL.Utils.NetworkChangeListener;
 import com.zeus_logistics.ZL.firebaseservices.MyFirebaseMessagingService;
@@ -43,6 +47,10 @@ import com.zeus_logistics.ZL.fragments.PreviousOrdersFragment;
 import com.zeus_logistics.ZL.fragments.PricelistFragment;
 import com.zeus_logistics.ZL.fragments.ProfileEditFragment;
 import com.zeus_logistics.ZL.fragments.ProfileFragment;
+import com.zeus_logistics.ZL.interactors.ProfileInteractor;
+import com.zeus_logistics.ZL.items.User;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -61,19 +69,19 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
     FloatingActionButton floatingActionButton;
     ConstraintLayout bottomSheetLayout;
+    private DatabaseReference mDatabaseReference;
+    private User mUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
 
         // Set SharedPreferences
         mSharedPreferences = getSharedPreferences(PREFERENCES_NAME, Activity.MODE_PRIVATE);
@@ -110,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         //View drawerHeader = nvDrawer.inflateHeaderView(R.layout.drawer_header);
         setupDrawerContent(nvDrawer);
 
-        currentUser = mAuth.getCurrentUser();
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = firebaseAuth -> {
             if(firebaseAuth.getCurrentUser() != null) {
@@ -295,17 +302,45 @@ public class MainActivity extends AppCompatActivity {
 
     //Customising NavHeader
     private void updateHeader(){
+        User user = new User();
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         View headerView = nvDrawer.getHeaderView(0);
-        TextView navUserName = headerView.findViewById(R.id.navUserName);
-        TextView navEmail = headerView.findViewById(R.id.usermail);
-        ImageView navUserPhoto = headerView.findViewById(R.id.navUserPhoto);
 
-        navUserName.setText(currentUser.getDisplayName());
-        navEmail.setText(currentUser.getEmail());
+        ImageView navUserPhoto = headerView.findViewById(R.id.navUserPhoto);
+        getUserDataFromDb();
+
 
         //Load user image with glide
-        Glide.with(this).load(currentUser.getPhotoUrl()).into(navUserPhoto);
+        Glide.with(this).load("http://goo.gl/gEgYUd").into(navUserPhoto);
+    }
+    public void getUserDataFromDb() {
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mUser = new User();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        final String uid = user.getUid();
+        mDatabaseReference.child("users").child(uid).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            mUser.setName(String.valueOf(dataSnapshot.child("name").getValue()));
+                            mUser.setEmail(String.valueOf(dataSnapshot.child("email").getValue()));
+                            NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
+                            View headerView = nvDrawer.getHeaderView(0);
+                            TextView navUserName = headerView.findViewById(R.id.navUserName);
+//                            TextView navEmail = headerView.findViewById(R.id.usermail);
+                            navUserName.setText(mUser.getName());
+//                            navEmail.setText(mUser.getEmail());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NotNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
     }
 
     /**
