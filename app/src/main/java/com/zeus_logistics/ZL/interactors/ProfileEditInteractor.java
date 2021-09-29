@@ -109,7 +109,7 @@ public class ProfileEditInteractor {
                         }
                         mDatabaseReference.child("users").child(userUid).setValue(mUser);
                         //update NavHeader View also
-                        mMainActivity.updateHeader();
+                        mMainActivity.getUserDataFromDb();
 
                         mPresenterEdit.sendToastRequestToView(2);
                     }
