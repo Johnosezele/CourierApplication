@@ -16,16 +16,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.zeus_logistics.ZL.activities.MainActivity;
 import com.zeus_logistics.ZL.items.User;
 import com.zeus_logistics.ZL.presenters.ProfileEditPresenter;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class ProfileEditInteractor {
 
     private ProfileEditPresenter mPresenterEdit;
     private DatabaseReference mDatabaseReference;
     private User mUser;
+    public MainActivity mMainActivity;
 
     public ProfileEditInteractor(ProfileEditPresenter mPresenterEdit) {
         this.mPresenterEdit = mPresenterEdit;
@@ -92,6 +96,7 @@ public class ProfileEditInteractor {
      * Updates user data in db.
      */
     public void updateUserDb() {
+        mMainActivity = new MainActivity();
         final String userUid = mUser.getUid();
         mDatabaseReference.child("users").child(userUid).
                 addListenerForSingleValueEvent(new ValueEventListener() {
@@ -103,6 +108,9 @@ public class ProfileEditInteractor {
                             resetUserAuthMail(mUser.getEmail());
                         }
                         mDatabaseReference.child("users").child(userUid).setValue(mUser);
+                        //update NavHeader View also
+                        mMainActivity.updateHeader();
+
                         mPresenterEdit.sendToastRequestToView(2);
                     }
                     @Override
@@ -110,6 +118,9 @@ public class ProfileEditInteractor {
                         Log.d("warning", "oncancelled");
                     }
                 });
+    }
+    public void callUpdateHeader(){
+
     }
 
     private void resetUserAuthMail(String newmail) {

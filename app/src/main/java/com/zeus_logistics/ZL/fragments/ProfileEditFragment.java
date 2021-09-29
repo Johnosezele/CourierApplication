@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.zeus_logistics.ZL.presenters.ProfileEditPresenter;
 import com.zeus_logistics.ZL.R;
 
@@ -22,9 +23,12 @@ import com.zeus_logistics.ZL.R;
 public class ProfileEditFragment extends Fragment {
 
     private ProfileEditPresenter mPresenter;
-    private EditText mNameEdit;
-    private EditText mPhoneEdit;
-    private EditText mMailEdit;
+    private TextInputEditText mEditTextPhone;
+    private TextInputEditText mEditTextName;
+    private TextInputEditText mEditTextEmail;
+//    private EditText mNameEdit;
+//    private EditText mPhoneEdit;
+//    private EditText mMailEdit;
     private Button mAcceptButton;
     private ProgressDialog mProgressDialog;
 
@@ -39,14 +43,17 @@ public class ProfileEditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        return inflater.inflate(R.layout.fragment_edit_profile, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mNameEdit = (EditText) view.findViewById(R.id.profileedit_name_edit_text);
-        mPhoneEdit = (EditText) view.findViewById(R.id.profileedit_telephone_edit_text);
-        mMailEdit = (EditText) view.findViewById(R.id.profileedit_mail_edit_text);
+        mEditTextPhone = view.findViewById(R.id.profileedit_telephone_edit_text);
+        mEditTextName = view.findViewById(R.id.profileedit_name_edit_text);
+        mEditTextEmail = view.findViewById(R.id.profileedit_mail_edit_text);
+//        mNameEdit = (EditText) view.findViewById(R.id.profileedit_name_edit_text);
+//        mPhoneEdit = (EditText) view.findViewById(R.id.profileedit_telephone_edit_text);
+//        mMailEdit = (EditText) view.findViewById(R.id.profileedit_mail_edit_text);
         mAcceptButton = (Button) view.findViewById(R.id.profileedit_accept_button);
 
         mPresenter = new ProfileEditPresenter(this);
@@ -57,12 +64,12 @@ public class ProfileEditFragment extends Fragment {
         mAcceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.setListenerForAccept(mNameEdit.getText().toString(),
-                        mPhoneEdit.getText().toString(),
-                        mMailEdit.getText().toString());
+                mPresenter.setListenerForAccept(mEditTextName.getText().toString(),
+                        mEditTextPhone.getText().toString(),
+                        mEditTextEmail.getText().toString());
             }
         });
-        mNameEdit.addTextChangedListener(new TextWatcher() {
+        mEditTextName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -75,10 +82,10 @@ public class ProfileEditFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_name), mNameEdit.getText().toString(), 1);
+                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_name), mEditTextName.getText().toString(), 1);
             }
         });
-        mPhoneEdit.addTextChangedListener(new TextWatcher() {
+        mEditTextPhone.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -91,10 +98,10 @@ public class ProfileEditFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_phone), mPhoneEdit.getText().toString(), 2);
+                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_phone), mEditTextPhone.getText().toString(), 2);
             }
         });
-        mMailEdit.addTextChangedListener(new TextWatcher() {
+        mEditTextEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -107,7 +114,7 @@ public class ProfileEditFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_mail), mMailEdit.getText().toString(), 3);
+                mPresenter.checkIfEditTextValid(getString(R.string.profile_error_mail), mEditTextEmail.getText().toString(), 3);
             }
         });
     }
@@ -130,18 +137,18 @@ public class ProfileEditFragment extends Fragment {
 
 
     public void setTexts(String name, String phone, String mail) {
-        mNameEdit.setText(name);
-        mPhoneEdit.setText(phone);
-        mMailEdit.setText(mail);
+        mEditTextName.setText(name);
+        mEditTextPhone.setText(phone);
+        mEditTextEmail.setText(mail);
     }
 
     public void setEditTextErrors(String errorMessage, int dataNumber) {
         if(dataNumber == 1) {
-            mNameEdit.setError(errorMessage);
+            mEditTextName.setError(errorMessage);
         } else if(dataNumber == 2) {
-            mPhoneEdit.setError(errorMessage);
+            mEditTextPhone.setError(errorMessage);
         } else if(dataNumber == 3) {
-            mMailEdit.setError(errorMessage);
+            mEditTextEmail.setError(errorMessage);
         }
     }
 

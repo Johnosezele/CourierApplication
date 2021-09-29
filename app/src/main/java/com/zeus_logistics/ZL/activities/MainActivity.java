@@ -47,6 +47,7 @@ import com.zeus_logistics.ZL.fragments.PreviousOrdersFragment;
 import com.zeus_logistics.ZL.fragments.PricelistFragment;
 import com.zeus_logistics.ZL.fragments.ProfileEditFragment;
 import com.zeus_logistics.ZL.fragments.ProfileFragment;
+import com.zeus_logistics.ZL.interactors.ProfileEditInteractor;
 import com.zeus_logistics.ZL.interactors.ProfileInteractor;
 import com.zeus_logistics.ZL.items.User;
 
@@ -301,11 +302,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Customising NavHeader
-    private void updateHeader(){
+    public void updateHeader(){
         User user = new User();
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         View headerView = nvDrawer.getHeaderView(0);
-
         ImageView navUserPhoto = headerView.findViewById(R.id.navUserPhoto);
         getUserDataFromDb();
 
@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()) {
                             mUser.setName(String.valueOf(dataSnapshot.child("name").getValue()));
-                            mUser.setEmail(String.valueOf(dataSnapshot.child("email").getValue()));
+                           // mUser.setEmail(String.valueOf(dataSnapshot.child("email").getValue()));
                             NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
                             View headerView = nvDrawer.getHeaderView(0);
                             TextView navUserName = headerView.findViewById(R.id.navUserName);
