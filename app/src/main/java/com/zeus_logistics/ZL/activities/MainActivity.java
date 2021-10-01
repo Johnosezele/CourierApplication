@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -52,6 +53,7 @@ import com.zeus_logistics.ZL.interactors.ProfileInteractor;
 import com.zeus_logistics.ZL.items.User;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import java.util.Objects;
 
@@ -307,11 +309,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         View headerView = nvDrawer.getHeaderView(0);
         ImageView navUserPhoto = headerView.findViewById(R.id.navUserPhoto);
+
+        //load user data
         getUserDataFromDb();
 
-
-        //Load user image with glide
-        Glide.with(this).load("http://goo.gl/gEgYUd").into(navUserPhoto);
+        //Load user image with glide http://goo.gl/gEgYUd
+        Glide.with(this).load("https://cdn-icons-png.flaticon.com/512/20/20079.png").into(navUserPhoto);
     }
     public void getUserDataFromDb() {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -332,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
 //                            TextView navEmail = headerView.findViewById(R.id.usermail);
                             navUserName.setText(mUser.getName());
 //                            navEmail.setText(mUser.getEmail());
+
                         }
                     }
 

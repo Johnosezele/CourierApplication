@@ -3,11 +3,15 @@ package com.zeus_logistics.ZL.interactors;
 
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -16,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.zeus_logistics.ZL.R;
 import com.zeus_logistics.ZL.activities.MainActivity;
 import com.zeus_logistics.ZL.items.User;
 import com.zeus_logistics.ZL.presenters.ProfileEditPresenter;
@@ -108,8 +113,6 @@ public class ProfileEditInteractor {
                             resetUserAuthMail(mUser.getEmail());
                         }
                         mDatabaseReference.child("users").child(userUid).setValue(mUser);
-                        //update NavHeader View also
-                        mMainActivity.getUserDataFromDb();
 
                         mPresenterEdit.sendToastRequestToView(2);
                     }
@@ -119,9 +122,7 @@ public class ProfileEditInteractor {
                     }
                 });
     }
-    public void callUpdateHeader(){
 
-    }
 
     private void resetUserAuthMail(String newmail) {
         FirebaseUser loggedUser = FirebaseAuth.getInstance().getCurrentUser();

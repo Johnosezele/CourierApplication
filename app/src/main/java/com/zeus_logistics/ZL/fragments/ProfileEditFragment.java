@@ -10,12 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.zeus_logistics.ZL.items.User;
 import com.zeus_logistics.ZL.presenters.ProfileEditPresenter;
 import com.zeus_logistics.ZL.R;
 
@@ -31,6 +36,7 @@ public class ProfileEditFragment extends Fragment {
 //    private EditText mMailEdit;
     private Button mAcceptButton;
     private ProgressDialog mProgressDialog;
+    private User mUser;
 
     public ProfileEditFragment() {
     }
@@ -58,6 +64,38 @@ public class ProfileEditFragment extends Fragment {
 
         mPresenter = new ProfileEditPresenter(this);
         mPresenter.initialize();
+    }
+
+    public void callUpdateHeader(){
+        //Nav drawer listener
+        mUser = new User();
+        DrawerLayout mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                mUser = new User();
+                NavigationView nvDrawer = (NavigationView) getActivity().findViewById(R.id.nvView);
+                View headerView = nvDrawer.getHeaderView(0);
+                TextView navUserName = headerView.findViewById(R.id.navUserName);
+                navUserName.setText(mUser.getName());
+            }
+        });
+
     }
 
     public void setListeners() {
