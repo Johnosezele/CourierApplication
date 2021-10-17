@@ -19,6 +19,14 @@ It is a **simple** courier application for Android phones.
 <img src="https://user-images.githubusercontent.com/18420040/134238494-c0a8af17-59da-4442-8831-943cafe91c45.png" alt="Home screen" width="480" height="960">
   <img src="https://user-images.githubusercontent.com/18420040/134238501-a5b49f80-335c-4206-866f-5c3fdcccdd5a.png" alt="Nav bar" width="480" height="960"></p></div>
 
+
+https://user-images.githubusercontent.com/18420040/137649262-a2f2db58-7a62-49a0-bc91-e8467484e7a7.mp4
+
+
+https://user-images.githubusercontent.com/18420040/137649298-6d8320ea-2960-47e6-a9c6-17b93acb6e18.mp4
+
+
+
 ## Disclaimer
 The code was written mainly in MVP pattern though probably not in the perfect way (first time using any sort of architectural pattern :)). 
 
